@@ -1,4 +1,5 @@
+blank_issues_enabled: false
 contact_links:
-  - name: "Get Help"
-    about: "Links to documentation and community support"
-    url: "https://cloudinit.readthedocs.io/en/latest/#project-and-community"
+  - name: .NET issues
+    url: https://github.com/dotnet/runtime#filing-issues
+    about: Issues with the runtime, class libraries, frameworks, and SDK should be addressed directly with the .NET team. Documentation on filing issues can be found here.
