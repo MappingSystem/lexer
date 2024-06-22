@@ -1,3 +1,5 @@
+
+
 name: 'Jekyll Deploy Action'
 description: >
   A Github Action to deploy the Jekyll site conveniently for GitHub Pages
@@ -55,6 +57,7 @@ runs:
       shell: bash
       id: variables
       run: |
+        gcloud info
         repo_name=${{ inputs.docker_hub_username }}/${{ inputs.image_name }}
         image_tag=${{ inputs.image_tag }}
         dev_image_tag="$image_tag"
