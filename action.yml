@@ -50,6 +50,8 @@ runs:
 
     - name: 💎 Authentication
       uses: 'google-github-actions/setup-gcloud@v2'
+      with:
+        install_components: 'alpha,cloud-datastore-emulator'
 
     - name: Variables
       shell: bash
