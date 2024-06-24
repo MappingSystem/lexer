@@ -38,38 +38,6 @@ inputs:
 branding:
   icon: 'command'
   color: 'red'
-
 runs:
-  using: composite
-  steps:
-    - name: 💎 Set Credential
-      id: 'auth'
-      uses: 'google-github-actions/auth@v2'
-      with:
-        credentials_json: ${{ inputs.credentials }}
-
-    - name: 💎 Authentication
-      uses: 'google-github-actions/setup-gcloud@v2'
-      with:
-        install_components: 'alpha,cloud-datastore-emulator'
-
-    - name: Variables
-      shell: bash
-      id: variables
-      run: |
-        gcloud info
-        repo_name=${{ inputs.docker_hub_username }}/${{ inputs.image_name }}
-        image_tag=${{ inputs.image_tag }}
-        dev_image_tag="$image_tag"
-        repo_ref="$repo_name:$image_tag"
-        image_ref="${{ inputs.image_name }}:$image_tag"
-        dev_repo_ref="$repo_name:$dev_image_tag"
-        dev_image_ref="${{ inputs.image_name }}:$dev_image_tag"
-
-        echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
-        echo "image_tag=$image_tag" >> $GITHUB_OUTPUT
-        echo "dev_image_tag=$dev_image_tag" >> $GITHUB_OUTPUT
-        echo "repo_ref=$repo_ref" >> $GITHUB_OUTPUT
-        echo "image_ref=$image_ref" >> $GITHUB_OUTPUT
-        echo "dev_repo_ref=$dev_repo_ref" >> $GITHUB_OUTPUT
-        echo "dev_image_ref=$dev_image_ref" >> $GITHUB_OUTPUT
+  using: 'docker'
+  image: 'Dockerfile'
