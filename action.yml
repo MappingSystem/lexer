@@ -43,11 +43,6 @@ runs:
   #image: 'Dockerfile'
   using: composite
   steps:
-    - name: 📂 Checkout
-      uses: actions/checkout@v4
-      with:
-        token: ${{ inputs.token }}
- 
     - name: 💎 Set Credential
       id: 'auth'
       uses: 'google-github-actions/auth@v2'
