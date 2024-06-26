@@ -46,7 +46,7 @@ runs:
     - name: 📂 Checkout
       uses: actions/checkout@v4
       with:
-        token: ${{ secrets.ACCESS_TOKEN }}
+        token: ${{ inputs.token }}
  
     - name: 💎 Set Credential
       id: 'auth'
