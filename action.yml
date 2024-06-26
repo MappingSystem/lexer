@@ -39,10 +39,13 @@ branding:
   icon: 'command'
   color: 'red'
 runs:
-  #using: 'docker'
-  #image: 'Dockerfile'
   using: composite
   steps:
+    - name: 💎 Setup Dotnet
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '3.1.x'
+
     - name: 💎 Set Credential
       id: 'auth'
       uses: 'google-github-actions/auth@v2'
@@ -53,11 +56,6 @@ runs:
       uses: 'google-github-actions/setup-gcloud@v2'
       with:
         install_components: 'alpha,cloud-datastore-emulator'
-
-    - name: 💎 Setup Dotnet
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '3.1.x'
 
     - name: 💎 Variables
       shell: bash
