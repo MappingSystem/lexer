@@ -43,8 +43,16 @@ branding:
 runs:
   using: composite
   steps:
-    - name: Archive code coverage results
+    - name: delete artifacts
+      uses: geekyeggo/delete-artifact@v5
+      with:
+        name: |
+          artifact-*
+          binary-file
+          output-result
+   
+    - name: Output result
       uses: actions/upload-artifact@v4
       with:
-        name: code-coverage-report
+        name: output-result
         path: ${{ github.workspace }}/_site
