@@ -43,14 +43,15 @@ branding:
 runs:
   using: composite
   steps:
-    - name: delete artifacts
+    - name: Delete existing artifacts
       uses: geekyeggo/delete-artifact@v5
       with:
         name: |
           artifact-*
           binary-file
           output-result
-   
+        failOnError: false   
+
     - name: Output result
       uses: actions/upload-artifact@v4
       with:
