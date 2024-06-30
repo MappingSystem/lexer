@@ -44,75 +44,11 @@ branding:
 runs:
   using: composite
   steps:
-    - name: 💎 Set Credential
-      id: 'auth'
-      uses: 'google-github-actions/auth@v2'
+    - name: Delete existing artifacts
+      uses: geekyeggo/delete-artifact@v5
       with:
-        credentials_json: ${{ inputs.credentials }}
-
-    - name: 💎 Authentication
-      uses: 'google-github-actions/setup-gcloud@v2'
-      with:
-        install_components: 'alpha,cloud-datastore-emulator'
-
-    - name: 💎 Set parameters
-      shell: bash
-      id: variables
-      run: |
-        repo_name=${{ inputs.docker_hub_username }}/${{ inputs.image_name }}
-        image_tag=${{ inputs.image_tag }}
-        dev_image_tag="$image_tag"
-        repo_ref="$repo_name:$image_tag"
-        image_ref="${{ inputs.image_name }}:$image_tag"
-        dev_repo_ref="$repo_name:$dev_image_tag"
-        dev_image_ref="${{ inputs.image_name }}:$dev_image_tag"
-
-        echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
-        echo "image_tag=$image_tag" >> $GITHUB_OUTPUT
-        echo "dev_image_tag=$dev_image_tag" >> $GITHUB_OUTPUT
-        echo "repo_ref=$repo_ref" >> $GITHUB_OUTPUT
-        echo "image_ref=$image_ref" >> $GITHUB_OUTPUT
-        echo "dev_repo_ref=$dev_repo_ref" >> $GITHUB_OUTPUT
-        echo "dev_image_ref=$dev_image_ref" >> $GITHUB_OUTPUT
-
-    - name: 💎 Self Hosted Runner
-      shell: powershell
-      env:
-        userdata: |
-          #cloud-config
-          users:
-          - default
-          - uid: 2000
-            name: runner
-            groups: admin,adm,video,docker,google-sudoers
-
-          write_files:
-          - owner: root
-            permissions: 0644
-            path: /etc/systemd/system/runner.service
-            content: |
-              [Unit]
-              Wants=gcr-online.target
-              After=gcr-online.target
-              Description=gcloud compute
-              [Service]
-              Environment="HOME=/home/runner"
-              ExecStop=/usr/bin/docker stop myrunner
-              ExecStopPost=/usr/bin/docker rm myrunner
-              ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
-              ExecStart=/usr/bin/docker run --rm --name myrunner -e RUNNER_NAME=Google-optimized-instance -e RUNNER_WORK_DIRECTORY=_work -e RUNNER_REPLACE_EXISTING=true -e RUNNER_REPOSITORY_URL=https://github.com/${{ inputs.repository }} -e GITHUB_ACCESS_TOKEN=${{ inputs.token }} -v /var/run/docker.sock:/var/run/docker.sock -v /mnt:/mnt ${{ inputs.pre_build_container }}
-
-          runcmd:
-          - systemctl daemon-reload
-          - systemctl start runner.service
-          - systemctl status runner.service
-
-          bootcmd:
-          - fsck.ext4 -tvy /dev/sdb1
-          - mkdir -p /mnt/disks/Linux
-          - mount -t ext4 -o discard,defaults /dev/sdb1 /mnt/disks/Linux
-
-      run: |
-        gcloud info
-        [IO.File]::WriteAllText("cloud-config", "${env:userdata}")
-        gcloud compute instances create instance-template --zone=us-central1-a --machine-type=e2-micro --image-family cos-stable --image-project cos-cloud --metadata-from-file=user-data=cloud-config --service-account=project-owner@feedmapping.iam.gserviceaccount.com
+        name: |
+          artifact-*
+          binary-file
+          output-result
+        failOnError: false   
