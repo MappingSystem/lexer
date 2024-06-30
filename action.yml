@@ -32,8 +32,9 @@ inputs:
   jekyll_baseurl:
     description: 'The Jekyll website baseurl'
     required: false
-  pre_build_commands:
-    description: 'The pre-build commands'
+  pre_build_container:
+    description: 'The pre-build docker container'
+    default: 'eq19/prime'
     required: false
 
 branding:
