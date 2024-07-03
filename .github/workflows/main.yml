@@ -46,7 +46,7 @@ jobs:
           image_tag: "latest"
 
       - name: 🚀 Build Feed on Linux
-        uses: eq19/feed@v3
+        uses: eq19/feed@v1
         with:
           pre_build_commands: 'make build'
           token: ${{ secrets.ACCESS_TOKEN }}
@@ -99,4 +99,4 @@ jobs:
         uses: Vampire/setup-wsl@v3
 
       - name: 🪂 Set Grammar Rules
-        uses: eq19/grammar@v1
+        uses: eq19/grammar@v2
