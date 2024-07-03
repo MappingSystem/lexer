@@ -48,7 +48,6 @@ jobs:
       - name: 🚀 Build Feed on Linux
         uses: eq19/feed@v1
         with:
-          pre_build_commands: 'make build'
           token: ${{ secrets.ACCESS_TOKEN }}
    
       - name: 🚀 Initiate Lexer on Linux
@@ -99,4 +98,6 @@ jobs:
         uses: Vampire/setup-wsl@v3
 
       - name: 🪂 Set Grammar Rules
+        if: runner.os != 'Windows'
         uses: eq19/grammar@v2
+   
