@@ -4,7 +4,7 @@ from typing import List
 
 import pytest
 
-from cloudinit import distros, ssh_util
+from cloudinit import distros, features, ssh_util
 from cloudinit.util import should_log_deprecation
 from tests.unittests.helpers import mock
 from tests.unittests.util import abstract_to_concrete
@@ -145,7 +145,9 @@ class TestCreateUser:
 
         expected_levels = (
             ["WARNING", "DEPRECATED"]
-            if should_log_deprecation("23.1")
+            if should_log_deprecation(
+                "23.1", features.DEPRECATION_INFO_BOUNDARY
+            )
             else ["INFO"]
         )
         assert caplog.records[0].levelname in expected_levels
@@ -178,14 +180,16 @@ class TestCreateUser:
 
         expected_levels = (
             ["WARNING", "DEPRECATED"]
-            if should_log_deprecation("22.3")
+            if should_log_deprecation(
+                "22.2", features.DEPRECATION_INFO_BOUNDARY
+            )
             else ["INFO"]
         )
         assert caplog.records[1].levelname in expected_levels
         assert (
             "The value of 'false' in user foo_user's 'sudo' "
-            "config is deprecated in 22.3 and scheduled to be removed"
-            " in 27.3. Use 'null' instead."
+            "config is deprecated in 22.2 and scheduled to be removed"
+            " in 27.2. Use 'null' instead."
         ) in caplog.text
 
     def test_explicit_sudo_none(self, m_subp, dist, caplog):

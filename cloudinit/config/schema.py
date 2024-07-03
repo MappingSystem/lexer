@@ -31,7 +31,7 @@ from typing import (
 
 import yaml
 
-from cloudinit import importer, safeyaml
+from cloudinit import features, importer, safeyaml
 from cloudinit.cmd.devel import read_cfg_paths
 from cloudinit.handlers import INCLUSION_TYPES_MAP, type_from_starts_with
 from cloudinit.helpers import Paths
@@ -127,7 +127,7 @@ if TYPE_CHECKING:
         title: str
         description: str
         distros: typing.List[str]
-        examples: typing.List[str]
+        examples: typing.List[Union[dict, str]]
         frequency: str
         activate_by_schema_keys: NotRequired[List[str]]
 
@@ -796,7 +796,7 @@ def validate_cloudconfig_schema(
             schema_error, SchemaDeprecationError
         ):  # pylint: disable=W1116
             if schema_error.version == "devel" or should_log_deprecation(
-                schema_error.version
+                schema_error.version, features.DEPRECATION_INFO_BOUNDARY
             ):
                 deprecations.append(SchemaProblem(path, schema_error.message))
             else:
@@ -939,16 +939,6 @@ class _Annotator:
         if not schema_errors and not schema_deprecations:
             return self._original_content
         lines = self._original_content.split("\n")
-        if not isinstance(self._cloudconfig, dict):
-            # Return a meaningful message on empty cloud-config
-            return "\n".join(
-                lines
-                + [
-                    self._build_footer(
-                        "Errors", ["# E1: Cloud-config is not a YAML dict."]
-                    )
-                ]
-            )
         errors_by_line = self._build_errors_by_line(schema_errors)
         deprecations_by_line = self._build_errors_by_line(schema_deprecations)
         annotated_content = self._annotate_content(
