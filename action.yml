@@ -1,4 +1,4 @@
-name: Build devcontainer
+okname: Build devcontainer
 description: Build a devcontainer that is compliant with the spec
 
 branding:
@@ -86,7 +86,7 @@ runs:
 
         gcloud info
         array=`gcloud compute instances list --format=json`
-        if [ "$array" != "[]" ]; then gcloud compute instances delete instance-template --zone=us-central1-a --quiet; fi
+        if [ "$array" != "[]" ]; then gcloud compute instances delete Google-COS --zone=us-central1-a --quiet; fi
 
     - name: Set Docker Hub description
       uses: peter-evans/dockerhub-description@v4
