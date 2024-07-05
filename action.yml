@@ -88,7 +88,8 @@ runs:
         array=`gcloud compute instances list --format=json`
         if [ "$array" != "[]" ]; then gcloud compute instances delete Google-COS --zone=us-central1-a --quiet; fi
 
-    - run: >
+    - shell: bash
+      run: >
         gcloud compute instances create Google-COS 
         --service-account=project-owner@feedmapping.gserviceaccount.com 
         --project=feedmapping --zone=us-central1-a --machine-type=e2-micro 
