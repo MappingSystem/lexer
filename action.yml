@@ -133,6 +133,26 @@ runs:
         			// Use -bullseye variants on local on arm64/Apple Silicon.
         			"VARIANT": "3.12-bookworm",
         		}
+        	},
+
+        	// Configure tool-specific properties.
+        	"customizations": {
+        		// Configure properties specific to VS Code.
+        		"vscode": {
+        			// Set *default* container specific settings.json values on container create.
+        			"settings": {
+        				"python.defaultInterpreterPath": "/usr/local/bin/python",
+        				"python.linting.enabled": true,
+        				"python.formatting.blackPath": "/usr/local/py-utils/bin/black",
+        				"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy"
+        			},
+
+        			// Add the IDs of extensions you want installed when the container is created.
+        			"extensions": [
+        				"ms-python.python",
+        				"ms-python.vscode-pylance"
+        			]
+        		}
         	}
         }
         EOL
