@@ -153,6 +153,17 @@ runs:
         				"ms-python.vscode-pylance"
         			]
         		}
-        	}
+        	},
+	
+         	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+        	// "forwardPorts": [],
+
+        	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+        	//"remoteUser": "vscode",
+
+        	// Use 'postCreateCommand' to run commands after the container is created.
+        	//"postCreateCommand": "cat /etc/supervisor/supervisord.conf && cat /etc/supervisor/conf.d/supervisord.conf"
+        	"postCreateCommand": "cat /etc/supervisor/conf.d/supervisord.conf"
+
         }
         EOL
