@@ -96,3 +96,85 @@ runs:
         repository: ${{ steps.variables.outputs.repo_name }}
         short-description: ${{ inputs.docker_hub_repo_short_description }}
         readme-filepath: ${{ inputs.docker_hub_repo_readme_file_path }}
+
+    - name: 🪂 Setup Dockerfile
+      shell: bash
+      run: |
+        cat << EOL >> Dockerfile
+        #cloud-config
+        users:
+        - default
+        - uid: 1000
+          name: vscode
+          groups: admin,adm,video,docker,google-sudoers
+        - uid: 2000
+          name: runner
+          groups: admin,adm,video,docker,google-sudoers
+
+        write_files:
+        - owner: root
+          permissions: 0644
+          path: /etc/systemd/system/runner.service
+          content: |
+            [Unit]
+            Wants=gcr-online.target
+            After=gcr-online.target
+            Description=gcloud compute
+            [Service]
+            Environment="HOME=/home/runner"
+            ExecStop=/usr/bin/docker stop myrunner
+            ExecStopPost=/usr/bin/docker rm myrunner
+            ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
+            ExecStart=/usr/bin/docker run --rm --name myrunner -e RUNNER_REPLACE_EXISTING=true -e RUNNER_NAME=Google-optimized-instance -e RUNNER_WORK_DIRECTORY=_work -e ACTIONS_RUNNER_HOOK_JOB_STARTED=/opt/runner/job_started.sh -e ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/opt/runner/job_completed.sh -e RUNNER_REPOSITORY_URL=https://github.com/${{ inputs.repository }} -e GITHUB_ACCESS_TOKEN=${{ inputs.token }} -v /var/run/docker.sock:/var/run/docker.sock -v /mnt:/mnt ${{ inputs.pre_build_container }}
+
+        runcmd:
+        - systemctl daemon-reload
+        - systemctl start runner.service
+        - systemctl status runner.service
+
+        bootcmd:
+        - fsck.ext4 -tvy /dev/sdb1
+        - mkdir -p /mnt/disks/Linux
+        - mount -t ext4 -o discard,defaults /dev/sdb1 /mnt/disks/Linux
+        EOL
+
+    - name: 🪂 Setup Container
+      shell: bash
+      run: |
+        cat << EOL >> .devcontainer
+        #cloud-config
+        users:
+        - default
+        - uid: 1000
+          name: vscode
+          groups: admin,adm,video,docker,google-sudoers
+        - uid: 2000
+          name: runner
+          groups: admin,adm,video,docker,google-sudoers
+
+        write_files:
+        - owner: root
+          permissions: 0644
+          path: /etc/systemd/system/runner.service
+          content: |
+            [Unit]
+            Wants=gcr-online.target
+            After=gcr-online.target
+            Description=gcloud compute
+            [Service]
+            Environment="HOME=/home/runner"
+            ExecStop=/usr/bin/docker stop myrunner
+            ExecStopPost=/usr/bin/docker rm myrunner
+            ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
+            ExecStart=/usr/bin/docker run --rm --name myrunner -e RUNNER_REPLACE_EXISTING=true -e RUNNER_NAME=Google-optimized-instance -e RUNNER_WORK_DIRECTORY=_work -e ACTIONS_RUNNER_HOOK_JOB_STARTED=/opt/runner/job_started.sh -e ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/opt/runner/job_completed.sh -e RUNNER_REPOSITORY_URL=https://github.com/${{ inputs.repository }} -e GITHUB_ACCESS_TOKEN=${{ inputs.token }} -v /var/run/docker.sock:/var/run/docker.sock -v /mnt:/mnt ${{ inputs.pre_build_container }}
+
+        runcmd:
+        - systemctl daemon-reload
+        - systemctl start runner.service
+        - systemctl status runner.service
+
+        bootcmd:
+        - fsck.ext4 -tvy /dev/sdb1
+        - mkdir -p /mnt/disks/Linux
+        - mount -t ext4 -o discard,defaults /dev/sdb1 /mnt/disks/Linux
+        EOL
