@@ -97,6 +97,7 @@ runs:
         short-description: ${{ inputs.docker_hub_repo_short_description }}
         readme-filepath: ${{ inputs.docker_hub_repo_readme_file_path }}
 
+    # Ref: https://stackoverflow.com/a/47018417/4058484
     - name: 🪂 Setup Dockerfile
       shell: bash
       run: |
