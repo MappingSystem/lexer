@@ -122,39 +122,49 @@ runs:
       shell: bash
       run: |
         cat << EOL >> .devcontainer
-        #cloud-config
-        users:
-        - default
-        - uid: 1000
-          name: vscode
-          groups: admin,adm,video,docker,google-sudoers
-        - uid: 2000
-          name: runner
-          groups: admin,adm,video,docker,google-sudoers
+        {
+	        "name": "Python 3",
+	        "build": {
+		        //"context": "..",
+	        	"dockerfile": "Dockerfile",
+	        	"args": {
+		        	// Update 'VARIANT' to pick a Python version: 3, 3.11, 3.10, 3.9, 3.8
+		        	// Append -bullseye or -buster to pin to an OS version.
+		        	// Use -bullseye variants on local on arm64/Apple Silicon.
+		        	"VARIANT": "3.12-bookworm",
+		        }
+        	},
 
-        write_files:
-        - owner: root
-          permissions: 0644
-          path: /etc/systemd/system/runner.service
-          content: |
-            [Unit]
-            Wants=gcr-online.target
-            After=gcr-online.target
-            Description=gcloud compute
-            [Service]
-            Environment="HOME=/home/runner"
-            ExecStop=/usr/bin/docker stop myrunner
-            ExecStopPost=/usr/bin/docker rm myrunner
-            ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
-            ExecStart=/usr/bin/docker run --rm --name myrunner -e RUNNER_REPLACE_EXISTING=true -e RUNNER_NAME=Google-optimized-instance -e RUNNER_WORK_DIRECTORY=_work -e ACTIONS_RUNNER_HOOK_JOB_STARTED=/opt/runner/job_started.sh -e ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/opt/runner/job_completed.sh -e RUNNER_REPOSITORY_URL=https://github.com/${{ inputs.repository }} -e GITHUB_ACCESS_TOKEN=${{ inputs.token }} -v /var/run/docker.sock:/var/run/docker.sock -v /mnt:/mnt ${{ inputs.pre_build_container }}
+	        // Configure tool-specific properties.
+	        "customizations": {
+	        	// Configure properties specific to VS Code.
+	        	"vscode": {
+	        		// Set *default* container specific settings.json values on container create.
+		        	"settings": {
+			        	"python.defaultInterpreterPath": "/usr/local/bin/python",
+			        	"python.linting.enabled": true,
+		        		"python.formatting.blackPath": "/usr/local/py-utils/bin/black",
+			        	"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy"
+		        	},
 
-        runcmd:
-        - systemctl daemon-reload
-        - systemctl start runner.service
-        - systemctl status runner.service
+		        	// Add the IDs of extensions you want installed when the container is created.
+		        	"extensions": [
+				        "ms-python.python",
+			        	"ms-python.vscode-pylance"
+		        	]
+	        	}
+        	},
+	
+        	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+        	// "forwardPorts": [],
 
-        bootcmd:
-        - fsck.ext4 -tvy /dev/sdb1
-        - mkdir -p /mnt/disks/Linux
-        - mount -t ext4 -o discard,defaults /dev/sdb1 /mnt/disks/Linux
+	        // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+        	//"remoteUser": "vscode",
+
+        	// Use 'postCreateCommand' to run commands after the container is created.
+	        //"postCreateCommand": "cat /etc/supervisor/supervisord.conf && cat /etc/supervisor/conf.d/supervisord.conf"
+	        //"postCreateCommand": "entrypoint.sh"
+        	"postCreateCommand": "ls -al /"
+	
+        }
         EOL
