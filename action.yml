@@ -121,7 +121,7 @@ runs:
     - name: 🪂 Setup Container
       shell: bash
       run: |
-        cat << EOL >> ./.devcontainer
+        cat << EOL >> .devcontainer.json
         {
 	        "name": "Python 3",
 	        "build": {
