@@ -123,5 +123,6 @@ runs:
       run: |
         cat << EOL >> .devcontainer.json
         {
+        	"name": "Python 3"
         }
         EOL
