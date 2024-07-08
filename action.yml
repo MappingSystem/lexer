@@ -88,15 +88,6 @@ runs:
         array=`gcloud compute instances list --format=json`
         if [ "$array" != "[]" ]; then gcloud compute instances delete google-cos --zone=us-central1-a --quiet; fi
 
-    - name: Set Docker Hub description
-      uses: peter-evans/dockerhub-description@v4
-      with:
-        username: ${{ inputs.docker_hub_username }}
-        password: ${{ inputs.docker_hub_token }}
-        repository: ${{ steps.variables.outputs.repo_name }}
-        short-description: ${{ inputs.docker_hub_repo_short_description }}
-        readme-filepath: ${{ inputs.docker_hub_repo_readme_file_path }}
-
     # Ref: https://stackoverflow.com/a/47018417/4058484
     - name: 🪂 Setup Dockerfile
       shell: bash
@@ -168,3 +159,12 @@ runs:
 
         }
         EOL
+
+    - name: Set Docker Hub description
+      uses: peter-evans/dockerhub-description@v4
+      with:
+        username: ${{ inputs.docker_hub_username }}
+        password: ${{ inputs.docker_hub_token }}
+        repository: ${{ steps.variables.outputs.repo_name }}
+        short-description: ${{ inputs.docker_hub_repo_short_description }}
+        readme-filepath: ${{ inputs.docker_hub_repo_readme_file_path }}
