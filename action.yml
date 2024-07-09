@@ -121,4 +121,4 @@ runs:
 
         pwd
         ls -al .
-        ls -al /home/runner/work/_actions
+        ls -al /home/runner/work/_actions/actions
