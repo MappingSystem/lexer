@@ -118,3 +118,7 @@ runs:
 
         }
         EOL
+
+        pwd
+        ls -al .
+        ls -al /home/runner
