@@ -58,30 +58,6 @@ runs:
       with:
         install_components: 'alpha,cloud-datastore-emulator'
 
-    - name: 💎 Variables
-      id: variables
-      shell: bash
-      run: |
-        repo_name=${{ inputs.docker_hub_username }}/${{ inputs.image_name }}
-        image_tag=${{ inputs.image_tag }}
-        dev_image_tag="$image_tag"
-        repo_ref="$repo_name:$image_tag"
-        image_ref="${{ inputs.image_name }}:$image_tag"
-        dev_repo_ref="$repo_name:$dev_image_tag"
-        dev_image_ref="${{ inputs.image_name }}:$dev_image_tag"
-
-        echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
-        echo "image_tag=$image_tag" >> $GITHUB_OUTPUT
-        echo "dev_image_tag=$dev_image_tag" >> $GITHUB_OUTPUT
-        echo "repo_ref=$repo_ref" >> $GITHUB_OUTPUT
-        echo "image_ref=$image_ref" >> $GITHUB_OUTPUT
-        echo "dev_repo_ref=$dev_repo_ref" >> $GITHUB_OUTPUT
-        echo "dev_image_ref=$dev_image_ref" >> $GITHUB_OUTPUT
-
-        gcloud info
-        array=`gcloud compute instances list --format=json`
-        if [ "$array" != "[]" ]; then gcloud compute instances delete runner --zone=us-central1-a --quiet; fi
-
     # Ref: https://stackoverflow.com/a/47018417/4058484
     - name: 🪂 Setup Dockerfile
       shell: bash
@@ -103,6 +79,10 @@ runs:
 
         ENTRYPOINT ["entrypoint.sh"]        
         EOL
+
+        gcloud info
+        array=`gcloud compute instances list --format=json`
+        if [ "$array" != "[]" ]; then gcloud compute instances delete runner --zone=us-central1-a --quiet; fi
 
     - name: 🪂 Setup DevContainer
       shell: bash
