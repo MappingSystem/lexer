@@ -114,12 +114,11 @@ runs:
 
         	// Use 'postCreateCommand' to run commands after the container is created.
         	//"postCreateCommand": "cat /etc/supervisor/supervisord.conf && cat /etc/supervisor/conf.d/supervisord.conf"
-        	"postCreateCommand": "ls -al /"
+        	"postCreateCommand": "ls -al /workspaces"
 
         }
         EOL
 
         pwd
         ls -al .
-        ls -al /workspaces
         ls -al /home/runner/work
