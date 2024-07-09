@@ -86,7 +86,7 @@ runs:
 
         gcloud info
         array=`gcloud compute instances list --format=json`
-        if [ "$array" != "[]" ]; then gcloud compute instances delete google-cos --zone=us-central1-a --quiet; fi
+        if [ "$array" != "[]" ]; then gcloud compute instances delete runner --zone=us-central1-a --quiet; fi
 
     # Ref: https://stackoverflow.com/a/47018417/4058484
     - name: 🪂 Setup Dockerfile
