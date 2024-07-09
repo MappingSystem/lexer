@@ -1,50 +1,108 @@
-name: PostgreSQL service example
-on: push
+# Main Workflow of eQuantum Project
+# Ref: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+name: Build and deploy eQuantum site
 
+# Runs on workflow_run.conclusion
+on:
+  push:
+    paths:
+      - '.github/**'
+      - '!**/reserves/**'
+  workflow_run:
+    types: [completed]
+    workflows: ["pages-build-deployment"]
+  
+# Allow concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+# Set GITHUB_TOKEN scopes
+permissions: write-all
+
+# Global environtment variables
+env:
+  RUN: ${{ github.run_id }}
+  USER: ${{ github.actor }}
+  REPO: ${{ github.repository }}
+  OWNER: ${{ github.repository_owner }}
+  ACTOR: ${{ github.triggering_actor }}
+  
 jobs:
-  # Label of the container job
-  container-job:
-    # Containers must run in Linux based operating systems
+  determine-runner:
     runs-on: ubuntu-latest
-    # Docker Hub image that `container-job` executes in
-    container: node:10.18-jessie
-
-    # Service containers to run with `container-job`
     services:
-      # Label used to access the service container
       postgres:
-        # Docker Hub image
         image: postgres
-        # Provide the password for postgres
-        env:
+        env: 
           POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
+    outputs:
+      runner: ${{ steps.set-runner.outputs.use-runner }}
 
     steps:
-      # Downloads a copy of the code in your repository before running CI tests
-      - name: Check out repository code
+      - name: 📂 Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+ 
+      - name: 🪂 Pre-build Maps
+        uses: eq19/maps@v2
+        with:
+          docker_hub_username: ${{ github.actor }}
+          docker_hub_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          dockerfile_path: ./.devcontainer/Dockerfile
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
+          image_name: "prime"
+          image_tag: "latest"
 
-      # Performs a clean installation of all dependencies in the `package.json` file
-      # For more information, see https://docs.npmjs.com/cli/ci.html
-      - name: Install dependencies
-        run: npm ci
+      - name: 🚀 Build Feed on Linux
+        #if: runner.os == 'Windows'
+        uses: eq19/feed@v3
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+   
+      - name: 🚀 Setup Lexer on Cloud
+        uses: eq19/lexer@v1
+        id: set-runner
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.ACCESS_TOKEN }}
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
+    
+  github-pages:
+    needs: determine-runner
+  
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        #node_version: [8, 10, 12]
+        os: [windows-latest, self-hosted]
+    runs-on: ${{ matrix.os }}
+    #runs-on: ${{ fromJson(needs.determine-runner.outputs.runner) }}
+    
+    if: ${{github.event_name == 'push' ||
+        github.event.workflow_run.conclusion == 'success'}}
 
-      - name: Connect to PostgreSQL
-        # Runs a script that creates a PostgreSQL table, populates
-        # the table with data, and then retrieves the data.
-        run: node client.js
-        # Environment variables used by the `client.js` script to create a new PostgreSQL table.
-        env:
-          # The hostname used to communicate with the PostgreSQL service container
-          POSTGRES_HOST: postgres
-          # The default PostgreSQL port
-          POSTGRES_PORT: 5432
+    steps:
+      - name: 📂 Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          #repository: eq19/eq19.github.io
+
+      - name: 🚀 Setup Parser
+        #if: runner.os != 'Windows'
+        uses: eq19/parser@v1
+
+      - name: 🪂 Evaluate Syntax
+        if: runner.os == 'Windows'
+        uses: eq19/syntax@v2
+        with:
+          wsl-conf: |
+            [automount]
+            root = /
+
+      - name: 🪂 Set Grammar Rules
+        if: runner.os != 'Windows'
+        uses: eq19/grammar@v3
