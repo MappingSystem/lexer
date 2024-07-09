@@ -121,4 +121,5 @@ runs:
 
         pwd
         ls -al .
-        ls -al /home/runner
+        ls -al /workspaces
+        ls -al /home/runner/work
