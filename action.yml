@@ -119,6 +119,9 @@ runs:
         }
         EOL
 
-        pwd
-        ls -al .
-        ls -alR /home/runner/work
+    - name: 🚀 Initiate Lexer
+      uses: eq19/eq19.github.io@main
+      with:
+        token: ${{ inputs.token }}
+        pre_build_container: 'eq19/setup'
+
