@@ -114,11 +114,16 @@ runs:
         short-description: ${{ inputs.docker_hub_repo_short_description }}
         readme-filepath: ${{ inputs.docker_hub_repo_readme_file_path }}
 
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    
     - name: Connect to PostgreSQL
       # Runs a script that creates a PostgreSQL table, populates
       # the table with data, and then retrieves the data.
       shell: bash
       run: |
+        npm ci
         node client.js
       # Environment variables used by the `client.js` script to create a new PostgreSQL table.
       env:
@@ -126,5 +131,3 @@ runs:
         POSTGRES_HOST: postgres
         # The default PostgreSQL port
         POSTGRES_PORT: 5432
-          
-
