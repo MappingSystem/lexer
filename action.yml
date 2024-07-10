@@ -130,4 +130,5 @@ runs:
       run: |
         npm install --package-lock-only pg
         npm ci
+        psql -h localhost -U postgres
         node client.js
