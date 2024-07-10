@@ -124,6 +124,8 @@ runs:
       shell: bash
       run: |
         npm install --package-lock-only
+        pwd
+        ls -al .
         npm ci
         node client.js
       # Environment variables used by the `client.js` script to create a new PostgreSQL table.
