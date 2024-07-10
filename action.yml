@@ -129,6 +129,6 @@ runs:
       shell: bash
       run: |
         npm install --package-lock-only pg
-        npm ci
-        psql -h localhost -U postgres
+        #npm ci
+        sudo -u postgres -i
         node client.js
