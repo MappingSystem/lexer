@@ -85,17 +85,6 @@ runs:
         username: ${{ inputs.docker_hub_username }}
         password: ${{ inputs.docker_hub_token }} 
         
-    - name: Connect to PostgreSQL
-      # Runs a script that creates a PostgreSQL table, populates
-      # the table with data, and then retrieves the data.
-      run: node client.js
-      # Environment variables used by the `client.js` script to create a new PostgreSQL table.
-      env:
-        # The hostname used to communicate with the PostgreSQL service container
-        POSTGRES_HOST: postgres
-        # The default PostgreSQL port
-        POSTGRES_PORT: 5432
-          
     - name: 💎 Variables
       id: variables
       shell: bash
@@ -124,3 +113,17 @@ runs:
         repository: ${{ steps.variables.outputs.repo_name }}
         short-description: ${{ inputs.docker_hub_repo_short_description }}
         readme-filepath: ${{ inputs.docker_hub_repo_readme_file_path }}
+
+    - name: Connect to PostgreSQL
+      # Runs a script that creates a PostgreSQL table, populates
+      # the table with data, and then retrieves the data.
+      shell: bash
+      run: node client.js
+      # Environment variables used by the `client.js` script to create a new PostgreSQL table.
+      env:
+        # The hostname used to communicate with the PostgreSQL service container
+        POSTGRES_HOST: postgres
+        # The default PostgreSQL port
+        POSTGRES_PORT: 5432
+          
+
