@@ -123,7 +123,7 @@ runs:
       # the table with data, and then retrieves the data.
       shell: bash
       run: |
-        npm install --package-lock-only
+        npm install --package-lock-only pg
         pwd
         ls -al .
         npm ci
