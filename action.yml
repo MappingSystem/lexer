@@ -114,24 +114,6 @@ runs:
         short-description: ${{ inputs.docker_hub_repo_short_description }}
         readme-filepath: ${{ inputs.docker_hub_repo_readme_file_path }}
 
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 20
-    
-    - name: Connect to PostgreSQL
-      # Runs a script that creates a PostgreSQL table, populates
-      # the table with data, and then retrieves the data.
-      env:
-        POSTGRES_PORT: 5432
-        POSTGRES_HOST: localhost
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-      shell: bash
-      run: |
-        npm install --package-lock-only pg
-        npm ci && sudo -u postgres -i
-        node client.js
-
     - name: 💎 Rule Settings
       if: runner.os != 'Windows'
       uses: actions/github-script@v7
