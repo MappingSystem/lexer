@@ -89,6 +89,8 @@ runs:
       id: variables
       shell: bash
       run: |
+        docker rmi eq19/prime:latest
+
         repo_name=${{ inputs.docker_hub_username }}/${{ inputs.image_name }}
         image_tag=${{ inputs.image_tag }}
         dev_image_tag="$image_tag"
@@ -106,6 +108,7 @@ runs:
         echo "dev_image_ref=$dev_image_ref" >> $GITHUB_OUTPUT
 
     - name: Set Docker Hub description
+      if: runner.os == 'Windows'
       uses: peter-evans/dockerhub-description@v4
       with:
         username: ${{ inputs.docker_hub_username }}
@@ -115,11 +118,10 @@ runs:
         readme-filepath: ${{ inputs.docker_hub_repo_readme_file_path }}
 
     - name: 💎 Rule Settings
-      if: runner.os != 'Windows'
       uses: actions/github-script@v7
       with:
         result-encoding: string
         script: |
           const { spawnSync } = require( 'child_process' )
-          const ls = spawnSync('ls', [ '-al', '/opt/runner/www' ] )
+          const ls = spawnSync('ls', [ '-al', '/' ] )
           console.log( `stdout: ${ ls.stdout.toString() }` )
