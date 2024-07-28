@@ -92,7 +92,7 @@ runs:
       id: variables
       shell: bash
       run: |
-        IMAGE_TAG=$(curl -L -s 'https://registry.hub.docker.com/v2/repositories/eq19/prime/tags?page_size=1024'|jq -rc '.results[0][name]')
+        IMAGE_TAG=$(curl -L -s 'https://registry.hub.docker.com/v2/repositories/eq19/prime/tags?page_size=1024'|jq -rc '."results"[0]["name"]')
         HUB_TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d "{\"username\": \"${{ inputs.docker_hub_username }}\", \"password\": \"${{ inputs.docker_hub_password }}\"}" https://hub.docker.com/v2/users/login/ | jq -r .token)
         curl -i -X DELETE -H "Accept: application/json" -H "Authorization: JWT $HUB_TOKEN" https://hub.docker.com/v2/namespaces/eq19/repositories/prime/tags/$IMAGE_TAG
         echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
