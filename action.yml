@@ -92,7 +92,7 @@ runs:
       id: variables
       shell: bash
       run: |
-        HUB_TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d "{\"username\": \"${{ inputs.docker_hub_password }}\", \"password\": \"${{ inputs.docker_hub_username }}\"}" https://hub.docker.com/v2/users/login/ | jq -r .token)
+        HUB_TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d "{\"username\": \"${{ inputs.docker_hub_username }}\", \"password\": \"${{ inputs.docker_hub_password }}\"}" https://hub.docker.com/v2/users/login/ | jq -r .token)
         curl -i -X DELETE \
         -H "Accept: application/json" \
         -H "Authorization: JWT $HUB_TOKEN" \
