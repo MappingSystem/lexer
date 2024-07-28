@@ -113,7 +113,7 @@ runs:
         echo "dev_image_ref=$dev_image_ref" >> $GITHUB_OUTPUT
 
     - name: Set Docker Hub description
-      if: runner.os != 'Windows'
+      if: runner.os == 'Ubuntu'
       uses: peter-evans/dockerhub-description@v4
       with:
         username: ${{ inputs.docker_hub_username }}
