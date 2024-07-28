@@ -89,7 +89,10 @@ runs:
       id: variables
       shell: bash
       run: |
-        #docker rmi eq19/prime:latest
+        curl -i -X DELETE \
+        -H "Accept: application/json" \
+        -H "Authorization: JWT ${{ inputs.docker_hub_token }}" \
+         https://hub.docker.com/v2/repositories/eq19/prime/tags/<TAG>/
 
         repo_name=${{ inputs.docker_hub_username }}/${{ inputs.image_name }}
         image_tag=${{ inputs.image_tag }}
