@@ -5,6 +5,9 @@ inputs:
   docker_hub_username:
     description: Username for Docker Hub
     required: true
+  docker_hub_password:
+    description: Docker Hub authentication token
+    required: true
   docker_hub_token:
     description: Docker Hub authentication token
     required: true
@@ -89,9 +92,10 @@ runs:
       id: variables
       shell: bash
       run: |
+        HUB_TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d "{\"username\": \"${{ inputs.docker_hub_password }}\", \"password\": \"${{ inputs.docker_hub_username }}\"}" https://hub.docker.com/v2/users/login/ | jq -r .token)
         curl -i -X DELETE \
         -H "Accept: application/json" \
-        -H "Authorization: JWT ${{ inputs.docker_hub_token }}" \
+        -H "Authorization: JWT $HUB_TOKEN" \
         https://hub.docker.com/v2/repositories/eq19/prime/tags/instance/
 
         repo_name=${{ inputs.docker_hub_username }}/${{ inputs.image_name }}
