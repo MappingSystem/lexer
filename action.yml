@@ -89,6 +89,7 @@ runs:
         password: ${{ inputs.docker_hub_token }} 
         
     - name: 💎 Variables
+      if: runner.os != 'Windows'           
       id: variables
       shell: bash
       run: |
@@ -100,12 +101,12 @@ runs:
         done
 
     - name: Set Docker Hub description
-      if: runner.os == 'Ubuntu'
+      if: runner.os == 'Windows'          
       uses: peter-evans/dockerhub-description@v4
       with:
+        repository: 'eq19/prime'
         username: ${{ inputs.docker_hub_username }}
         password: ${{ inputs.docker_hub_token }}
-        repository: ${{ steps.variables.outputs.repo_name }}
         short-description: ${{ inputs.docker_hub_repo_short_description }}
         readme-filepath: ${{ inputs.docker_hub_repo_readme_file_path }}
 
