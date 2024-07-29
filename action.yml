@@ -83,6 +83,7 @@ runs:
   using: composite
   steps:
     - name: Login to DockerHub
+      if: runner.os == 'Windows'
       uses: docker/login-action@v3
       with:
         username: ${{ inputs.docker_hub_username }}
@@ -101,7 +102,7 @@ runs:
         done
 
     - name: Set Docker Hub description
-      if: runner.os == 'Windows'          
+      if: runner.os == 'Windows'
       uses: peter-evans/dockerhub-description@v4
       with:
         repository: 'eq19/prime'
