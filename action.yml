@@ -83,7 +83,7 @@ runs:
   using: composite
   steps:
     - name: Login to DockerHub
-      if: runner.os == 'Windows'
+      if: runner.os == 'Linux'
       uses: docker/login-action@v3
       with:
         username: ${{ inputs.docker_hub_username }}
