@@ -121,7 +121,7 @@ runs:
               -e ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/opt/runner/job_completed.sh 
               -e RUNNER_REPOSITORY_URL=https://github.com/${{ inputs.repository }} 
               -e GITHUB_ACCESS_TOKEN=${{ inputs.token }}
-              -e DATABASE_URL="postgresql+psycopg2://postgres:@host.docker.internal:5432/postgres" \
+              -e CONNECTION_URI="postgresql+psycopg2://postgres:@host.docker.internal:5432/postgres" \
               -v /var/run/docker.sock:/var/run/docker.sock 
               -v /mnt:/mnt ${{ inputs.pre_build_container }}:build-${{ github.run_number }}
 
