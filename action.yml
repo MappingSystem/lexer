@@ -85,6 +85,7 @@ runs:
               -e RUNNER_REPLACE_EXISTING=true \
               -e RUNNER_NAME=Google-optimized-instance \
               -e RUNNER_WORK_DIRECTORY=_work \
+              -e ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER=true \
               -e ACTIONS_RUNNER_CONTAINER_HOOKS=/opt/runner/index.js \
               -e ACTIONS_RUNNER_HOOK_JOB_STARTED=/opt/runner/job_started.sh \
               -e ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/opt/runner/job_completed.sh \
