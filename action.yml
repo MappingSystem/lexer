@@ -98,6 +98,7 @@ runs:
         bootcmd:
         - fsck.ext4 -tvy /dev/sdb1
         - mkdir -p /mnt/disks/Linux
+        - /opt/hostedtoolcache
         - mount -t ext4 -o discard,defaults /dev/sdb1 /mnt/disks/Linux
         EOL
         
