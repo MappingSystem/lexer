@@ -72,10 +72,26 @@ runs:
           content: |
             [Unit]
             Description=Configures the host firewall
+
             [Service]
             Type=oneshot
             RemainAfterExit=true
             ExecStart=/sbin/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+        - path: /etc/systemd/system/myhttp.service
+          permissions: 0644
+          owner: root
+          content: |
+            [Unit]
+            Description=My HTTP service
+            After=docker.service firewall.service
+            Wants=docker.service firewall.service
+
+            [Service]
+            Restart=always
+            ExecStop=/usr/bin/docker exec myhost -s quit
+            ExecStart=/usr/bin/docker run --rm \
+              --name=myhost --net=host nginx
 
         - path: /etc/systemd/system/runner.service
           permissions: 0644
@@ -83,8 +99,9 @@ runs:
           content: |
             [Unit]
             Description=gcloud compute
-            Wants=docker.service firewall.service
-            After=docker.service firewall.service
+            Wants=myhttp.service
+            After=myhttp.service
+
             [Service]
             Environment="HOME=/home/runner"
             ExecStop=/usr/bin/docker stop myrunner
@@ -94,7 +111,6 @@ runs:
               --name myrunner \
               --pull=always \
               --privileged \
-              --net=host \
               -e RUNNER_REPLACE_EXISTING=true \
               -e RUNNER_NAME=Google-optimized-instance \
               -e RUNNER_REPOSITORY_URL=https://github.com/${{ inputs.repository }} \
