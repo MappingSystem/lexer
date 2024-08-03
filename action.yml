@@ -1,3 +1,4 @@
+
 name: Build devcontainer
 description: Build a devcontainer that is compliant with the spec
 
@@ -66,36 +67,23 @@ runs:
           groups: admin,adm,video,docker,google-sudoers
 
         write_files:
-        - path: /etc/systemd/system/firewall.service
+        - owner: root
           permissions: 0644
-          owner: root
-          content: |
-          [Unit]
-          Description=Configures the host firewall
-          [Service]
-          Type=oneshot
-          RemainAfterExit=true
-          ExecStart=/sbin/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-    
-        - path: /etc/systemd/system/runner.service
-          permissions: 0644
-          owner: root
+          path: /etc/systemd/system/runner.service
           content: |
             [Unit]
+            Wants=gcr-online.target
+            After=gcr-online.target
             Description=gcloud compute
-            After=docker.service firewall.service
-            Wants=docker.service firewall.service
             [Service]
-            Restart=always
             Environment="HOME=/home/runner"
             ExecStop=/usr/bin/docker stop myrunner
             ExecStopPost=/usr/bin/docker rm myrunner
             ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
             ExecStart=/usr/bin/docker run --rm \
-              --net=host \
-              --privileged \
-              --pull=always \
               --name myrunner \
+              --pull=always \
+              --privileged \
               -e RUNNER_REPLACE_EXISTING=true \
               -e RUNNER_NAME=Google-optimized-instance \
               -e RUNNER_REPOSITORY_URL=https://github.com/${{ inputs.repository }} \
