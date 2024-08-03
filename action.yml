@@ -66,9 +66,20 @@ runs:
           groups: admin,adm,video,docker,google-sudoers
 
         write_files:
-        - owner: root
+        - path: /etc/systemd/system/firewall.service
           permissions: 0644
-          path: /etc/systemd/system/runner.service
+          owner: root
+          content: |
+          [Unit]
+          Description=Configures the host firewall
+          [Service]
+          Type=oneshot
+          RemainAfterExit=true
+          ExecStart=/sbin/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+        - path: /etc/systemd/system/runner.service
+          permissions: 0644
+          owner: root
           content: |
             [Unit]
             Wants=gcr-online.target
