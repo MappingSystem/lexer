@@ -76,7 +76,7 @@ runs:
             [Service]
             Type=oneshot
             RemainAfterExit=true
-            ExecStart=/sbin/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+            ExecStart=/sbin/iptables -A INPUT -p tcp --dport 6379 -j ACCEPT
 
         - path: /etc/systemd/system/myhttp.service
           permissions: 0644
@@ -91,7 +91,7 @@ runs:
             Restart=always
             ExecStop=/usr/bin/docker exec myhost -s quit
             ExecStart=/usr/bin/docker run --rm \
-              --name=myhost --net=host nginx
+              --name=myhost --net=host redis
 
         - path: /etc/systemd/system/runner.service
           permissions: 0644
