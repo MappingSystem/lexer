@@ -82,6 +82,7 @@ runs:
             ExecStart=/usr/bin/docker run --rm \
               --name myrunner \
               --pull=always \
+              --privileged \
               -e RUNNER_REPLACE_EXISTING=true \
               -e RUNNER_NAME=Google-optimized-instance \
               -e RUNNER_REPOSITORY_URL=https://github.com/${{ inputs.repository }} \
