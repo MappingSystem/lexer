@@ -82,8 +82,8 @@ runs:
           owner: root
           content: |
             [Unit]
-            Wants=gcr-online.target
-            After=gcr-online.target
+            Wants=docker.service config-firewall.service
+            After=docker.service config-firewall.service
             Description=gcloud compute
             [Service]
             Environment="HOME=/home/runner"
@@ -94,6 +94,7 @@ runs:
               --name myrunner \
               --pull=always \
               --privileged \
+              --net=host \
               -e RUNNER_REPLACE_EXISTING=true \
               -e RUNNER_NAME=Google-optimized-instance \
               -e RUNNER_REPOSITORY_URL=https://github.com/${{ inputs.repository }} \
