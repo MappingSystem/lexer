@@ -70,12 +70,12 @@ runs:
           permissions: 0644
           owner: root
           content: |
-          [Unit]
-          Description=Configures the host firewall
-          [Service]
-          Type=oneshot
-          RemainAfterExit=true
-          ExecStart=/sbin/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+            [Unit]
+            Description=Configures the host firewall
+            [Service]
+            Type=oneshot
+            RemainAfterExit=true
+            ExecStart=/sbin/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
         - path: /etc/systemd/system/runner.service
           permissions: 0644
           owner: root
