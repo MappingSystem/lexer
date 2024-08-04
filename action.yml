@@ -122,6 +122,8 @@ runs:
             After=postgres.service
 
             [Service]
+            RestartSec=5s
+            Restart=on-failure
             Environment="HOME=/home/runner"
             ExecStop=/usr/bin/docker stop myrunner
             ExecStopPost=/usr/bin/docker rm myrunner
