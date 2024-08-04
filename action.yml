@@ -91,6 +91,7 @@ runs:
             Restart=always
             ExecStop=/usr/bin/docker exec myhost -s quit
             ExecStart=/usr/bin/docker run --rm \
+              --add-host=host.docker.internal:host-gateway \
               --name=myhost --net=host -p 6379:6379 redis
 
         - path: /etc/systemd/system/runner.service
