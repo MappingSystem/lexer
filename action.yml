@@ -78,20 +78,35 @@ runs:
             RemainAfterExit=true
             ExecStart=/sbin/iptables -A INPUT -p tcp --dport 6379 -j ACCEPT
 
-        - path: /etc/systemd/system/myhttp.service
+        - path: /etc/systemd/system/redis.service
           permissions: 0644
           owner: root
           content: |
             [Unit]
-            Description=My HTTP service
+            Description=Redis service
             After=docker.service firewall.service
             Wants=docker.service firewall.service
 
             [Service]
             Restart=always
+            ExecStop=/usr/bin/docker exec myredis -s quit
+            ExecStart=/usr/bin/docker run --rm \
+              --name=myredis --net=host -p 6379:6379 redis
+
+        - path: /etc/systemd/system/postgres.service
+          permissions: 0644
+          owner: root
+          content: |
+            [Unit]
+            Description=My HTTP service
+            After=redis.service
+            Wants=redis.service
+
+            [Service]
+            Restart=always
             ExecStop=/usr/bin/docker exec myhost -s quit
             ExecStart=/usr/bin/docker run --rm \
-              --name=myhost --net=host -p 6379:6379 redis
+              --name=myhost --net=host -p 5432:5532 postgres
 
         - path: /etc/systemd/system/runner.service
           permissions: 0644
@@ -99,8 +114,8 @@ runs:
           content: |
             [Unit]
             Description=gcloud compute
-            Wants=myhttp.service
-            After=myhttp.service
+            Wants=postgres.service
+            After=postgres.service
 
             [Service]
             Environment="HOME=/home/runner"
