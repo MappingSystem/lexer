@@ -109,7 +109,7 @@ runs:
               -e POSTGRES_DB=postgres \
               -e POSTGRES_USER=postgres \
               -e POSTGRES_PASSWORD=postgres \
-              --name=mydb --net=host -p 5432:5532 postgres
+              --name=mydb --net=host -p 5432:5432 postgres
 
         - path: /etc/systemd/system/runner.service
           permissions: 0644
