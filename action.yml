@@ -92,7 +92,7 @@ runs:
             Restart=always
             ExecStop=/usr/bin/docker exec myredis -s quit
             ExecStart=/usr/bin/docker run --rm \
-              --name=myredis --net=host -p 6379:6379 redis
+              --name=myredis -p 6379:6379 redis
 
         - path: /etc/systemd/system/postgres.service
           permissions: 0644
@@ -110,7 +110,7 @@ runs:
               -e POSTGRES_DB=postgres \
               -e POSTGRES_USER=postgres \
               -e POSTGRES_PASSWORD=postgres \
-              --name=mydb --net=host -p 5432:5432 postgres
+              --name=mydb -p 5432:5432 postgres
 
         - path: /etc/systemd/system/runner.service
           permissions: 0644
