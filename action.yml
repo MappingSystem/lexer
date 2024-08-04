@@ -98,15 +98,18 @@ runs:
           owner: root
           content: |
             [Unit]
-            Description=My HTTP service
+            Description=Postgres service
             After=redis.service
             Wants=redis.service
 
             [Service]
             Restart=always
-            ExecStop=/usr/bin/docker exec myhost -s quit
+            ExecStop=/usr/bin/docker exec mydb -s quit
             ExecStart=/usr/bin/docker run --rm \
-              --name=myhost --net=host -p 5432:5532 postgres
+              -e POSTGRES_DB=postgres \
+              -e POSTGRES_USER=postgres \
+              -e POSTGRES_PASSWORD=postgres \
+              --name=mydb --net=host -p 5432:5532 postgres
 
         - path: /etc/systemd/system/runner.service
           permissions: 0644
@@ -123,16 +126,14 @@ runs:
             ExecStopPost=/usr/bin/docker rm myrunner
             ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
             ExecStart=/usr/bin/docker run --rm \
-              --name myrunner \
-              --pull=always \
-              --privileged \
               -e RUNNER_REPLACE_EXISTING=true \
               -e RUNNER_NAME=Google-optimized-instance \
               -e RUNNER_REPOSITORY_URL=https://github.com/${{ inputs.repository }} \
               -e GITHUB_ACCESS_TOKEN=${{ inputs.token }} \
               -e CONNECTION_URI="postgresql+psycopg2://postgres:postgres@172.17.0.1:5432/postgres?sslmode=disable" \
               -v /var/run/docker.sock:/var/run/docker.sock \
-              -v /mnt:/mnt ${{ inputs.pre_build_container }}:build-${{ github.run_number }}
+              -v /mnt:/mnt \
+              --name myrunner --pull=always ${{ inputs.pre_build_container }}:build-${{ github.run_number }}
 
         runcmd:
         - systemctl daemon-reload
