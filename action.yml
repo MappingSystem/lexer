@@ -181,13 +181,6 @@ runs:
         RUNNER_ID=$(gh api -H "${HEADER}" /repos/${REPO}/actions/runners --jq '.runners.[].id')
         if (( $TOTAL_COUNT != 0 )); then gh api --method DELETE -H "${HEADER}" /repos/${REPO}/actions/runners/${RUNNER_ID}; fi 
 
-    - name: 🚀 Initiate Lexer
-      if: runner.os != 'Windows'          
-      uses: eq19/eq19.github.io@main
-      with:
-        token: ${{ inputs.token }}
-        image_tag: build-${{ github.run_number }}
-
     - name: 🪂 Setup Runner
       if: runner.os == 'Windows'          
       shell: bash
