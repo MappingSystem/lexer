@@ -2,7 +2,7 @@ FROM hashicorp/terraform:latest
 
 RUN apk add --no-cache -U \
     py-pip \
-    python-dev \
+    python3-dev \
     gcc \
     musl-dev \
     libffi-dev \
