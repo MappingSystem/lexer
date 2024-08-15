@@ -11,11 +11,11 @@ RUN apk add --no-cache -U \
     sudo \
     openssl
 
-RUN pip install \
-    awscli \
-    ansible \
-    boto \
-    boto3
+#RUN pip install \
+    #awscli \
+    #ansible \
+    #boto \
+    #boto3
 
 RUN adduser -g "Terraform User" -D -s /usr/sbin/nologin terraform
 USER terraform
