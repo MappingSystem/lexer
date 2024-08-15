@@ -1,7 +1,48 @@
-name: Build devcontainer
-description: Build a devcontainer that is compliant with the spec
-
+name: 'Docker Deploy Action'
+description: >
+  🪂  A Github Action to deploy pages conveniently
 inputs:
+  docker_hub_username:
+    description: Username for Docker Hub
+    required: true
+  docker_hub_password:
+    description: Docker Hub authentication token
+    required: true
+  docker_hub_token:
+    description: Docker Hub authentication token
+    required: true
+  credentials:
+    description: 'The gcloud credentials'
+    required: true
+  image_name:
+    description: "Name for the container to be created. Example: nginx"
+    default: 'eq19/root'
+    required: false
+  image_tag:
+    description: Tag to use for the new image
+    required: true
+  dockerfile_path:
+    description: Path to the dockerfile from which to build the image
+    required: true
+  build_args:
+    description: Build args
+    required: false
+    default: ""
+  docker_hub_repo_short_description:
+    description: Short description text for the docker hub repo
+    required: true
+  docker_hub_repo_readme_file_path:
+    description: |
+      Path of the md file which will be used as the docker hub repo readme
+    required: true
+  cache_src:
+    description: Path for the docker cache source
+    required: false
+    default: /tmp/.buildx-cache
+  cache_dest:
+    description: Path for the docker cache destination
+    required: false
+    default: /tmp/.buildx-cache-new
   provider:
     description: 'The deploy provider'
     required: true
@@ -11,34 +52,14 @@ inputs:
   token:
     description: 'The deploy token'
     required: false
-  credentials:
-    description: 'The gcloud credentials'
-    required: true
   repository:
     description: 'The deploy repository'
     default: ${{ github.repository }}
     required: false
-  branch:
-    description: 'The deploy branch'
-    required: false
-  actor:
-    description: 'The github username creating the commit'
-    required: false
-  boot_ver:
-    description: 'The Bundler version'
-    default: '--no-boot-disk-auto-delete'
-    required: false
-  jekyll_baseurl:
-    description: 'The Jekyll website baseurl'
-    required: false
-  image_name:
-    description: 'The pre-build docker container'
-    default: 'eq19/root'
-    required: false
 
 branding:
   icon: 'command'
-  color: 'red'
+  color: 'green'
 
 runs:
   using: composite
