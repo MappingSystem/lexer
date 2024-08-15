@@ -1,4 +1,4 @@
-# Cloud config generator
+# [Cloud config generator](https://github.com/4ops/terraform-null-cloud-config)
 
 Simple template tool for creating [cloud-config](https://cloudinit.readthedocs.io/en/latest/topics/examples.html) with [Terraform](https://www.terraform.io/)
 
