@@ -83,7 +83,7 @@ runs:
         configFile: /home/runner/work/_actions/eq19/lexer/v1/.devcontainer.json
 
     - name: 💎 Variables
-      if: runner.os != 'Windows'
+      if: runner.os == 'Ubuntu'
       id: variables
       shell: bash
       run: |
