@@ -186,7 +186,7 @@ runs:
       uses: devcontainers/ci@v0.3
       with:
         push: always
-        runCmd: "-version"
+        runCmd: "terraform -v"
         #runCmd: make ci-build
         #runCmd: service postgresql start
         skipContainerUserIdUpdate: true
