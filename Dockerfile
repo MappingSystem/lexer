@@ -1,6 +1,11 @@
 FROM hashicorp/terraform:latest
 
 RUN apk add --no-cache -U \
+    bash \
+    curl \
+    github-cli \
+    jq \
+    yq \
     py-pip \
     python3-dev \
     gcc \
