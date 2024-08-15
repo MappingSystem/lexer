@@ -49,6 +49,20 @@ runs:
       with:
         credentials_json: ${{ inputs.credentials }}
 
+    - name: 🚀 Initiate Lexer
+      if: runner.os != 'Windows'
+      uses: devcontainers/ci@v0.3
+      with:
+        push: always
+        runCmd: "terraform -v"
+        #runCmd: make ci-build
+        #runCmd: service postgresql start
+        skipContainerUserIdUpdate: true
+        cacheFrom: tcardonne/github-runner
+        imageName: ${{ inputs.image_name }}
+        imageTag: build-${{ github.run_number }}
+        configFile: /home/runner/work/_actions/eq19/lexer/v1/.devcontainer.json
+        
     # See https://github.com/thesofproject/sof/blob/main/zephyr/docker-run.sh
     - name: 🪂 Cloud Config
       if: runner.os == 'Windows'
@@ -136,7 +150,7 @@ runs:
               -e CONNECTION_URI="postgresql+psycopg2://postgres:postgres@172.17.0.1:5432/postgres?sslmode=disable" \
               -v /var/run/docker.sock:/var/run/docker.sock \
               -v /mnt:/mnt \
-              --name myrunner --pull=always ${{ inputs.image_name }}:build-${{ github.run_number }}
+              --name myrunner --pull=always eq19/prime:build-${{ github.run_number }}
 
         runcmd:
         - systemctl daemon-reload
@@ -181,20 +195,6 @@ runs:
         RUNNER_ID=$(gh api -H "${HEADER}" /repos/${REPO}/actions/runners --jq '.runners.[].id')
         if (( $TOTAL_COUNT != 0 )); then gh api --method DELETE -H "${HEADER}" /repos/${REPO}/actions/runners/${RUNNER_ID}; fi 
 
-    - name: 🚀 Initiate Lexer
-      if: runner.os != 'Windows'
-      uses: devcontainers/ci@v0.3
-      with:
-        push: always
-        runCmd: "terraform -v"
-        #runCmd: make ci-build
-        #runCmd: service postgresql start
-        skipContainerUserIdUpdate: true
-        cacheFrom: tcardonne/github-runner
-        imageName: ${{ inputs.image_name }}
-        imageTag: build-${{ github.run_number }}
-        configFile: /home/runner/work/_actions/eq19/lexer/v1/.devcontainer.json
-        
     - name: 🪂 Setup Runner
       if: runner.os == 'Windows'          
       shell: bash
