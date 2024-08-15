@@ -195,7 +195,7 @@ runs:
         imageTag: build-${{ github.run_number }}
         configFile: /home/runner/work/_actions/eq19/lexer/v1/.devcontainer.json
         
-      - name: 🪂 Setup Runner
+    - name: 🪂 Setup Runner
       if: runner.os == 'Windows'          
       shell: bash
       # Ref: https://stackoverflow.com/a/47018417/4058484
