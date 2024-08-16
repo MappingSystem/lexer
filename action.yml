@@ -79,8 +79,8 @@ runs:
         runCmd: "terraform -v"
         skipContainerUserIdUpdate: true
         imageTag: build-${{ github.run_number }}
+        configFile: ${{ github.action_path }}/.devcontainer.json
         imageName: ${{ inputs.docker_hub_username }}/${{ inputs.image_name }}
-        configFile: /home/runner/work/_actions/eq19/lexer/v1/.devcontainer.json
 
     - name: 💎 Variables
       if: runner.os != 'Windows'
