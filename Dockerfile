@@ -23,6 +23,6 @@ RUN apk add --no-cache -U \
     #boto3
 
 RUN adduser -g "Terraform User" -D -s /usr/sbin/nologin terraform
-#USER terraform
+USER terraform
 
 CMD ["-version"]
