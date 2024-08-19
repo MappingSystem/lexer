@@ -76,7 +76,7 @@ runs:
       uses: devcontainers/ci@v0.3
       with:
         push: always
-        runCmd: "terraform -v"
+        runCmd: ls -alR /home/runner
         skipContainerUserIdUpdate: true
         imageTag: build-${{ github.run_number }}
         configFile: ${{ github.action_path }}/.devcontainer.json
