@@ -1,137 +1,174 @@
-# Main Workflow of eQuantum Project
-# Ref: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
-name: Build and deploy eQuantum site
+# 💎 Main Workflow: eQuantum MEC30
+name: COmpendium of RElations – Modulo 6
 
-# Runs on workflow_run.conclusion
 on:
-  push:
-    paths:
-      - '.github/**'
-      - '!**/reserves/**'
+  #push:
   workflow_run:
     types: [completed]
     workflows: ["pages-build-deployment"]
+  repository_dispatch:
+    types: [trigger_action, retry_workflow]
 
-# Allow concurrent deployment
+# 🕸️ Allow concurrent
 concurrency:
   group: "pages"
   cancel-in-progress: true
 
-# Set GITHUB_TOKEN scopes
+# ⚠️ Set token permissions
 permissions: write-all
         
-# Global environtment variables
+# 🕸️ Global Environment
 env:
-  RUN: ${{ github.run_id }}
-  USER: ${{ github.actor }}
-  REPO: ${{ github.repository }}
-  OWNER: ${{ github.repository_owner }}
-  ACTOR: ${{ github.triggering_actor }}
-  
+  GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  RUNNER_TITLE: "Google-optimized-instance"
+  TARGET_REPOSITORY: ${{ vars.TARGET_REPOSITORY }}
+
 jobs:
-  determine-runner:
-    runs-on: ubuntu-latest
-    #container: node:latest
-    services:
-      postgres:
-        image: postgres
-        ports: ['5432:5432']
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-
-    outputs:
-      runner: ${{ steps.set-runner.outputs.use-runner }}
-
-    steps:
-      - name: 📂 Checkout
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.ACCESS_TOKEN }}
-          #repository: ${{ env.OWNER }}/${{ env.OWNER }}.github.io
-          
-      - name: 🪂 Pre-build Maps
-        #if: runner.os == 'Windows'
-        uses: eq19/maps@v2
-        with:
-          image_name: "prime"
-          image_tag: "latest"
-          token: ${{ secrets.ACCESS_TOKEN }}
-          docker_hub_username: ${{ github.actor }}
-          docker_hub_token: ${{ secrets.DOCKER_HUB_TOKEN }}
-
-      - name: 🚀 Build Feed on Linux
-        uses: eq19/feed@v3
-        with:
-          credentials: ${{ secrets.GCP_CREDENTIALS }}
-  
-      - name: 🔧 Setup Lexer on Cloud
-        uses: eq19/lexer@v1
-        id: set-runne
-        with:
-          repository: ${{ github.repository }}
-          token: ${{ secrets.ACCESS_TOKEN }}
-          credentials: ${{ secrets.GCP_CREDENTIALS }}
-    
-  github-pages:
-    defaults:
-      run:
-        shell: bash
-    needs: determine-runner
-
+  lexering:
     strategy:
       max-parallel: 1
-      fail-fast: false
+      fail-fast: true
       matrix:
-        #node_version: [8, 10, 12]
-        os: [windows-latest, self-hosted]
-        mocha-args-windows: [
-          # "src/test/cli.build.test.ts",
-          # "src/test/cli.exec.buildKit.1.test.ts",
-          # "src/test/cli.exec.buildKit.2.test.ts",
-          # "src/test/cli.exec.nonBuildKit.1.test.ts",
-          # "src/test/cli.exec.nonBuildKit.2.test.ts",
-          # "src/test/cli.test.ts",
-          # "src/test/cli.up.test.ts",
-          "src/test/container-features/containerFeaturesOCI.test.ts",
-          # "src/test/container-features/containerFeaturesOCIPush.test.ts",
-          # "src/test/container-features/containerFeaturesOrder.test.ts",
-          # "src/test/container-features/e2e.test.ts",
-          # "src/test/container-features/featureHelpers.test.ts",
-          # "src/test/container-features/featuresCLICommands.test.ts",
-          #"src/test/container-features/generateFeaturesConfig.test.ts",
-          # "src/test/container-templates/containerTemplatesOCI.test.ts",
-          # "src/test/container-templates/templatesCLICommands.test.ts",
-          # "src/test/dockerComposeUtils.test.ts",
-          # "src/test/dockerfileUtils.test.ts",
-          # "src/test/dockerUtils.test.ts",
-          # "src/test/imageMetadata.test.ts",
-          # "src/test/variableSubstitution.test.ts",
-          # "src/test/container-features/registryCompatibilityOCI.test.ts",
-          # # Run all except the above:
-          # "--exclude .....",
-        ]
-   
-    runs-on: ${{ matrix.os }}
-    #runs-on: ${{ fromJson(needs.determine-runner.outputs.runner) }}
-    
-    if: ${{github.event_name == 'push' ||
-        github.event.workflow_run.conclusion == 'success'}}
+        config:
+          - { os: ubuntu-latest, jobs_id: 1 }
+          - { os: macos-latest, jobs_id: 2 }
+    env:
+      JOBS_ID: ${{ matrix.config.jobs_id }}
+      PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+      DOC: '${{ vars.TARGET_REPOSITORY }}.wiki'
+
+    # 🔧 Commutation relations
+    runs-on: ${{ matrix.config.os }}
+    continue-on-error: ${{ matrix.config.jobs_id != 1 && false || true }}
 
     steps:
       - name: 📂 Checkout
         uses: actions/checkout@v4
         with:
+          submodules: recursive
           token: ${{ secrets.ACCESS_TOKEN }}
+          repository: ${{ env.JOBS_ID != 1 && env.DOC || '' }}
 
-      - name: ⚙️ Setup Parser
-        uses: eq19/parser@v1
+      - name: ⚙️ Build Maps
+        uses: eq19/maps@v8
+        id: build-parser
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
+          chat_id: ${{ secrets.MESSAGE_API }}
+          api_key: ${{ secrets.ACCESS_API }}
+          api_secret: ${{ secrets.ACCESS_KEY }}
+          pypi_token: ${{ secrets.PYPI_TOKEN }}
+          bot_token: ${{ secrets.MONITOR_TOKEN }}
+          logs_token: ${{ secrets.WARNING_TOKEN }}
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
+          docker_hub_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker_hub_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          initiate_pauli_sum: ${{ toJSON(steps.build-parser.outputs) }}
 
-      - name: ⚠️ Evaluate Syntax
-        if: runner.os == 'Ubuntu'
+      - name: 🪂 Feed Mapping
+        uses: eq19/feed@v6
+        id: feed-mapping
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          chat_id: ${{ secrets.MESSAGE_API }}
+          api_key: ${{ secrets.ACCESS_API }}
+          api_secret: ${{ secrets.ACCESS_KEY }}
+          pypi_token: ${{ secrets.PYPI_TOKEN }}
+          bot_token: ${{ secrets.MONITOR_TOKEN }}
+          logs_token: ${{ secrets.WARNING_TOKEN }}
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
+          docker_hub_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker_hub_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          initiate_pauli_sum: ${{ toJSON(steps.build-parser.outputs) }}
+
+      - name: 🏃‍♂️ Lexering Runner
+        uses: eq19/lexer@v4
+        id: set-lexering
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          config: ${{ secrets.CONFIG_JSON }}
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
+          docker_hub_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker_hub_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          initiate_pauli_sum: ${{ toJSON(steps.feed-mapping.outputs) }}
+
+      - name: 📋 Generate Outputs
+        id: gen_outputs
+        shell: bash
+        run: |
+          output=${{ env.JOBS_ID == 1 &&
+            steps.feed-mapping.outputs.addition ||
+            steps.set-lexering.outputs.multiplication }}
+          echo "output_${id}=${output}" >> "${GITHUB_OUTPUT}"
+
+    outputs:
+      # ♻️ Simulate Gell-Mann Matrices
+      target: ${{ steps.gen_outputs.outputs.output_1 }}
+      address: ${{ steps.gen_outputs.outputs.output_2 }}
+      function: ${{ steps.set-lexering.outputs.function }}
+
+  parsering:
+    strategy:
+      matrix:
+        config:
+          - { os: self-hosted, jobs_id: 3 }
+          - { os: windows-latest, jobs_id: 4 }
+
+      # 💢 Completeness relations
+      max-parallel: 1
+      fail-fast: true
+
+    env:
+      JOBS_ID: ${{ matrix.config.jobs_id }}
+      IP_ADDRESS: '${{ needs.lexering.outputs.address }}'
+      PASS: ${{ contains(needs.lexering.result, 'success') }}
+
+    ## ✔️ Completeness status
+    needs: lexering
+    runs-on: ${{ matrix.config.os }}
+    #if: ${{ (needs.lexering.result == 'success') }}
+    continue-on-error: ${{ matrix.config.jobs_id == 3 && true || false }}
+     
+    steps:
+      - name: 📂 Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.ACCESS_TOKEN }}
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.JOBS_ID == 3 && 'gh-source' || 'gh-pages' }}                  
+
+      - name: 🚀 Setup Parser
+        if: ${{ env.PASS == 'true' }}
+        uses: eq19/parser@v2
+        id: set-parser
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
+          pauli_sum: ${{ needs.lexering.outputs.function }}
+          failure_status: ${{ contains(steps.*.conclusion, 'failure') ||
+            (env.JOBS_ID == 4 && contains(needs.*.result, 'failure')) }}
+       
+      - name: 🌀 Evaluate Syntax
+        if: ${{ env.PASS == 'true' }}
         uses: eq19/syntax@v2
-
-      - name: 🏃‍♂️ Set Grammar Rules
+        id: eval-syntax
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          api_key: ${{ secrets.ACCESS_API }}
+          api_secret: ${{ secrets.ACCESS_KEY }}
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
+          pauli_sum: ${{ toJSON(steps.set-parser.outputs) }}
+          failure_status: ${{ contains(steps.*.conclusion, 'failure') ||
+            (env.JOBS_ID == 4 && contains(needs.*.result, 'failure')) }}
+  
+      - name: ⚧️ Set Grammar Rules
         uses: eq19/grammar@v1
+        id: grammar-rules
+        if: always()
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
+          pauli_sum: ${{ toJSON(steps.eval-syntax.outputs) }}
+          failure_status: ${{ contains(steps.*.conclusion, 'failure') ||
+            (env.JOBS_ID == 4 && contains(needs.*.result, 'failure')) }}
