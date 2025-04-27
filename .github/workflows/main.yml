@@ -45,8 +45,8 @@ jobs:
       - name: 📂 Checkout
         uses: actions/checkout@v4
         with:
-          #submodules: recursive
-          #token: ${{ secrets.ACCESS_TOKEN }}
+          submodules: recursive
+          token: ${{ secrets.ACCESS_TOKEN }}
           repository: ${{ env.JOBS_ID != 1 && env.DOC || '' }}
 
       - name: ⚙️ Build Maps
