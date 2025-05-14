@@ -1,10 +1,10 @@
-id: 93
+id: 95
 user: eq19
-span: span-74
+span: span-76
 title: eQuantum
-baseurl: /maps
-repository: MappingSystem/maps
-action: MappingSystem/MappingSystem.github.io/actions/runs/14694333232
+baseurl: /lexer
+repository: MappingSystem/lexer
+action: MappingSystem/feed/actions/runs/15019046595
 description: ₠Quantum Project
 
 #debug:
@@ -48,6 +48,6 @@ plugins:
   - jekyll-optional-front-matter
 
 track:
-  spin: [7, 1]
+  spin: [7, 3]
   pinned: [maps, feed, lexer, parser, syntax, grammar, flowchart, sequence, tree, route, channel, skema]
   organization: [Chetabahana, FeedMapping, GlobalZones, HybridModels, JunctionTerms, KernelPatterns, MappingSystem, NeuralSystem, ObjectModules, VirtualNetworks, WeakNegative, WeakPositive, ZeroWeak]
